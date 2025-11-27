@@ -1,0 +1,59 @@
+/* Custom Scrollbar for Clue List */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Grid Cell Styles */
+.grid-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.1s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.grid-cell:hover {
+    background-color: rgba(79, 70, 229, 0.1); /* primary with opacity */
+}
+
+.grid-cell.selected {
+    background-color: #4F46E5; /* primary */
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.grid-cell.found {
+    background-color: #10B981; /* green-500 */
+    color: white;
+    animation: pulse-green 0.5s ease-out;
+}
+
+@keyframes pulse-green {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Selection Line (optional, if we want to draw a line over cells) */
+/* For now, we will highlight individual cells */

@@ -1,0 +1,26 @@
+{
+    "name": "acf/sopa-letras",
+    "title": "Sopa de Letras",
+    "description": "Un juego de sopa de letras interactivo.",
+    "style": "file:./sopa-letras.css",
+    "category": "formatting",
+    "icon": "grid-view",
+    "keywords": [
+        "sopa",
+        "letras",
+        "juego",
+        "game",
+        "word",
+        "search"
+    ],
+    "acf": {
+        "mode": "preview",
+        "renderTemplate": "render.php",
+        "blockVersion": 3
+    },
+    "supports": {
+        "align": false,
+        "anchor": true,
+        "jsx": true
+    }
+}

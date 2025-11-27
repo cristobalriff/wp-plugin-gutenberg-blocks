@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sopa de Letras</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4F46E5', // Indigo 600
+                        secondary: '#EC4899', // Pink 500
+                        accent: '#8B5CF6', // Violet 500
+                        background: '#F3F4F6', // Gray 100
+                        surface: '#FFFFFF',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-background text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-surface shadow-md p-4 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                Sopa de Letras
+            </h1>
+
+            <div class="flex items-center gap-4 bg-gray-100 p-2 rounded-lg shadow-inner">
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 text-sm font-semibold">TIEMPO</span>
+                    <span id="timer" class="text-xl font-mono font-bold text-primary">00:00</span>
+                </div>
+                <div class="w-px h-6 bg-gray-300"></div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 text-sm font-semibold">PUNTOS</span>
+                    <span id="score" class="text-xl font-mono font-bold text-secondary">0</span>
+                </div>
+                <div class="w-px h-6 bg-gray-300"></div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500 text-sm font-semibold">ERRORES</span>
+                    <span id="errors" class="text-xl font-mono font-bold text-red-500">0</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <select id="grid-size"
+                    class="bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-2 px-3 text-sm">
+                    <option value="16">16x16</option>
+                    <option value="20">20x20</option>
+                    <option value="28">28x28</option>
+                </select>
+                <button id="reset-btn"
+                    class="bg-primary hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all shadow-lg hover:shadow-xl active:scale-95 text-sm">
+                    Reiniciar
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full p-4 gap-6">
+
+        <!-- Grid Section -->
+        <section class="flex-grow flex justify-center items-start overflow-auto">
+            <div id="game-board" class="bg-surface p-4 rounded-xl shadow-2xl select-none relative">
+                <!-- Grid will be generated here -->
+                <div id="grid-container" class="grid gap-1 bg-gray-200 p-1 rounded-lg"></div>
+            </div>
+        </section>
+
+        <!-- Sidebar / Clues -->
+        <aside class="w-full md:w-80 lg:w-96 flex flex-col gap-4">
+            <div class="bg-surface p-6 rounded-xl shadow-lg flex-grow">
+                <h2 class="text-xl font-bold mb-4 text-gray-700 border-b pb-2">Pistas</h2>
+                <div class="flex justify-between text-sm text-gray-500 mb-2">
+                    <span>Encontradas: <span id="found-count" class="font-bold text-primary">0</span>/<span
+                            id="total-count">0</span></span>
+                </div>
+                <ul id="clue-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                    <!-- Clues will be injected here -->
+                </ul>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Success Modal -->
+    <div id="success-modal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div
+            class="bg-surface rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform transition-all scale-100 animate-bounce-in">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">¡Felicitaciones!</h2>
+            <p class="text-gray-600 mb-6">Has encontrado todas las palabras.</p>
+
+            <div class="grid grid-cols-2 gap-4 mb-8 bg-gray-50 p-4 rounded-xl">
+                <div>
+                    <p class="text-xs text-gray-500 uppercase">Tiempo</p>
+                    <p id="final-time" class="text-xl font-bold text-primary">00:00</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase">Puntuación</p>
+                    <p id="final-score" class="text-xl font-bold text-secondary">0</p>
+                </div>
+            </div>
+
+            <button id="play-again-btn"
+                class="w-full bg-gradient-to-r from-primary to-accent hover:from-indigo-600 hover:to-violet-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transform transition hover:-translate-y-1">
+                Jugar de nuevo
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
