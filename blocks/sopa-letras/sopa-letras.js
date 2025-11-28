@@ -190,15 +190,15 @@
             console.log('Rendering grid with size:', size);
 
             // Adjust font size based on grid size - larger for better readability
-            let fontSizeClass = 'acfb-text-xl md:acfb-text-2xl';
-            if (size >= 28) fontSizeClass = 'acfb-text-base';
-            else if (size >= 20) fontSizeClass = 'acfb-text-lg';
+            let fontSizeClass = 'acfb-text-2xl md:acfb-text-3xl';
+            if (size >= 28) fontSizeClass = 'acfb-text-lg';
+            else if (size >= 20) fontSizeClass = 'acfb-text-xl';
 
             for (let r = 0; r < size; r++) {
                 for (let c = 0; c < size; c++) {
                     const cell = document.createElement('div');
                     // Neobrutalist styling
-                    cell.className = `grid-cell acfb-bg-white acfb-text-black acfb-border-2 acfb-border-black ${fontSizeClass} acfb-flex acfb-items-center acfb-justify-center acfb-aspect-square acfb-font-black acfb-cursor-pointer hover:acfb-bg-yellow-100 acfb-select-none acfb-transition-all`;
+                    cell.className = `grid-cell acfb-bg-white acfb-text-black acfb-border-[0.5px] acfb-border-black ${fontSizeClass} acfb-flex acfb-items-center acfb-justify-center acfb-aspect-square acfb-font-black acfb-cursor-pointer hover:acfb-bg-yellow-100 acfb-select-none acfb-transition-all`;
                     cell.dataset.r = r;
                     cell.dataset.c = c;
                     cell.textContent = gameState.grid[r][c];
@@ -430,10 +430,13 @@
         }
 
         function showCelebration(word) {
+            console.log('=== SHOWING CELEBRATION FOR WORD:', word, '===');
+
             // Create celebration element
             const celebration = document.createElement('div');
             celebration.className = 'word-celebration acfb-fixed acfb-bottom-8 acfb-right-8 acfb-z-50 acfb-flex acfb-flex-col acfb-items-center acfb-gap-2';
             celebration.style.animation = 'acfb-bounce 0.5s ease-in-out';
+            celebration.style.zIndex = '9999'; // Ensure it's on top
 
             // Create image container with dancing cat
             const catContainer = document.createElement('div');
@@ -441,10 +444,29 @@
 
             const catImg = document.createElement('img');
             const pluginUrl = window.wp_plugin_gutenberg_blocks?.plugin_url || '/wp-content/plugins/wp-plugin-gutenberg-blocks';
-            catImg.src = `${pluginUrl}/blocks/sopa-letras/dancing-cat.png`;
+            const imagePath = `${pluginUrl}/blocks/sopa-letras/dancing-cat.png`;
+
+            console.log('Plugin URL:', pluginUrl);
+            console.log('Full Image Path:', imagePath);
+
+            catImg.src = imagePath;
             catImg.alt = 'Celebrating cat';
             catImg.className = 'acfb-w-full acfb-h-full acfb-object-contain';
             catImg.style.animation = 'acfb-dance 0.5s ease-in-out infinite';
+
+            // Add image load handlers for debugging
+            catImg.addEventListener('load', function () {
+                console.log('✓ Cat image loaded successfully!');
+            });
+
+            catImg.addEventListener('error', function (e) {
+                console.error('✗ Failed to load cat image:', imagePath);
+                console.error('Error details:', e);
+                // Show a fallback emoji if image fails to load
+                catContainer.innerHTML = '🎉';
+                catContainer.style.fontSize = '96px';
+                catContainer.style.textAlign = 'center';
+            });
 
             catContainer.appendChild(catImg);
 
@@ -453,7 +475,7 @@
             banner.className = 'acfb-bg-white acfb-border-4 acfb-border-black acfb-px-4 acfb-py-2 acfb-shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] acfb-transform acfb-rotate-[-5deg]';
             banner.innerHTML = `
                 <div class="acfb-text-center">
-                    <p class="acfb-text-sm acfb-font-bold acfb-text-black acfb-m-0">Felicitaciones encontraste:</p>
+                    <p class="acfb-text-sm acfb-font-bold acfb-text-black acfb-m-0">Felicitaciones encontraste la palabra:</p>
                     <p class="acfb-text-xl acfb-font-black acfb-text-black acfb-uppercase acfb-m-0">${word}</p>
                 </div>
             `;
@@ -461,6 +483,9 @@
             celebration.appendChild(catContainer);
             celebration.appendChild(banner);
             container.appendChild(celebration);
+
+            console.log('✓ Celebration element added to container');
+            console.log('Celebration element:', celebration);
 
             // Add sparkles effect
             for (let i = 0; i < 5; i++) {
@@ -480,8 +505,13 @@
             // Remove celebration after animation
             setTimeout(() => {
                 celebration.style.animation = 'acfb-fade-out 0.5s ease-out';
-                setTimeout(() => celebration.remove(), 500);
+                setTimeout(() => {
+                    celebration.remove();
+                    console.log('✓ Celebration removed');
+                }, 500);
             }, 2000);
+
+            console.log('=== END CELEBRATION SETUP ===');
         }
 
         function handleWin() {
@@ -523,14 +553,37 @@
                 }
             });
 
-            // Show loss modal
+            // Show loss modal with word list
             const modalTitle = successModal.querySelector('h2');
             const modalText = successModal.querySelector('p');
             const modalIcon = successModal.querySelector('svg');
 
             // Update modal content for loss
             modalTitle.textContent = "Perdiste :(";
-            modalText.textContent = "Más suerte la próxima";
+
+            // Create a list of all words with their definitions
+            let wordListHTML = '<div class="acfb-text-left acfb-max-h-[50vh] acfb-overflow-y-auto acfb-mb-4">';
+            wordListHTML += '<p class="acfb-font-bold acfb-mb-3 acfb-text-center">Lista completa de palabras (20):</p>';
+            wordListHTML += '<ul class="acfb-space-y-2">';
+
+            gameState.words.forEach((wordObj, index) => {
+                const foundClass = wordObj.found ? 'acfb-text-green-700 acfb-line-through' : 'acfb-text-red-700';
+                const foundIcon = wordObj.found ? '✓' : '✗';
+                wordListHTML += `
+                    <li class="acfb-border-2 acfb-border-black acfb-p-2 acfb-bg-white">
+                        <div class="acfb-flex acfb-items-start acfb-gap-2">
+                            <span class="acfb-font-black acfb-text-sm ${foundClass}">${foundIcon}</span>
+                            <div class="acfb-flex-grow">
+                                <p class="acfb-font-black acfb-text-sm ${foundClass}">${index + 1}. ${wordObj.word}</p>
+                                <p class="acfb-text-xs acfb-text-gray-700">${wordObj.clue}</p>
+                            </div>
+                        </div>
+                    </li>
+                `;
+            });
+
+            wordListHTML += '</ul></div>';
+            modalText.innerHTML = wordListHTML;
 
             // Change icon to sad face or X (optional, keeping simple for now or using X path)
             // Using a simple X path for loss
@@ -551,6 +604,14 @@
 
         resetBtn.addEventListener('click', initGame);
         playAgainBtn.addEventListener('click', initGame);
+
+        // Close modal button
+        const closeModalBtn = container.querySelector('.close-modal-btn');
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                successModal.classList.add('acfb-hidden');
+            });
+        }
 
         // Grid size change listeners
         gridSizeBtns.forEach(btn => {
