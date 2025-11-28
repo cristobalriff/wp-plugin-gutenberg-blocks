@@ -555,7 +555,7 @@
 
             // Show loss modal with word list
             const modalTitle = successModal.querySelector('h2');
-            const modalText = successModal.querySelector('p');
+            const modalText = successModal.querySelector('.modal-message');
             const modalIcon = successModal.querySelector('svg');
 
             // Update modal content for loss
