@@ -51,6 +51,58 @@ $config_json = htmlspecialchars(json_encode($game_config), ENT_QUOTES, 'UTF-8');
 $unique_id = 'sopa-letras-' . uniqid();
 ?>
 
+<script>
+    window.wp_plugin_gutenberg_blocks = window.wp_plugin_gutenberg_blocks || {};
+    window.wp_plugin_gutenberg_blocks.plugin_url = '<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 3) . "/plugin.php")); ?>';
+</script>
+
+<style>
+    @keyframes acfb-dance {
+
+        0%,
+        100% {
+            transform: translateY(0) rotate(0deg);
+        }
+
+        25% {
+            transform: translateY(-10px) rotate(-5deg);
+        }
+
+        75% {
+            transform: translateY(-10px) rotate(5deg);
+        }
+    }
+
+    @keyframes acfb-sparkle {
+        0% {
+            opacity: 1;
+            transform: scale(0) rotate(0deg);
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1.5) rotate(180deg);
+        }
+
+        100% {
+            opacity: 0;
+            transform: scale(0) rotate(360deg);
+        }
+    }
+
+    @keyframes acfb-fade-out {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        to {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+    }
+</style>
+
 <div <?php echo $anchor; ?>class="<?php echo esc_attr($class_name); ?> acfb-bg-yellow-300 acfb-p-8 acfb-font-sans"
     data-game-config="<?php echo $config_json; ?>" id="<?php echo esc_attr($unique_id); ?>">
 
@@ -87,14 +139,40 @@ $unique_id = 'sopa-letras-' . uniqid();
                 </div>
             </div>
 
-            <button
-                class="reset-btn acfb-bg-yellow-400 hover:acfb-bg-yellow-300 acfb-text-black acfb-font-black acfb-py-3 acfb-px-6 acfb-border-4 acfb-border-black acfb-shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:acfb-shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:acfb-shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:acfb-translate-x-[2px] active:acfb-translate-y-[2px] acfb-uppercase acfb-text-sm acfb-transition-all">
-                Reiniciar
-            </button>
+            <!-- Grid Size Selector -->
+            <div
+                class="acfb-bg-white acfb-border-4 acfb-border-black acfb-p-2 acfb-shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div class="acfb-text-xs acfb-font-black acfb-uppercase acfb-mb-2 acfb-text-center">TAMAÑO</div>
+                <div class="acfb-flex acfb-gap-2">
+                    <button data-grid-size="12"
+                        class="grid-size-btn acfb-bg-purple-300 acfb-text-black acfb-font-black acfb-px-3 acfb-py-2 acfb-border-2 acfb-border-black acfb-text-xs acfb-uppercase acfb-transition-all hover:acfb-bg-purple-400 acfb-shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        12x12
+                    </button>
+                    <button data-grid-size="16"
+                        class="grid-size-btn acfb-bg-lime-300 acfb-text-black acfb-font-black acfb-px-3 acfb-py-2 acfb-border-4 acfb-border-black acfb-text-xs acfb-uppercase acfb-transition-all acfb-shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                        16x16
+                    </button>
+                    <button data-grid-size="20" class="grid-size-btn acfb-bg-orange-300 acfb-text-black acfb-font-black acfb-px-3 acfb-py-2 acfb-border-2 acfb-border-black acfb-text-xs acfb-uppercase acfb-transition-all hover:acfb-bg-orange-400 acfb-shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        20x20
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="acfb-flex acfb-gap-4">
+                <button
+                    class="give-up-btn acfb-bg-red-400 hover:acfb-bg-red-300 acfb-text-black acfb-font-black acfb-py-3 acfb-px-6 acfb-border-4 acfb-border-black acfb-shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:acfb-shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:acfb-shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:acfb-translate-x-[2px] active:acfb-translate-y-[2px] acfb-uppercase acfb-text-sm acfb-transition-all">
+                    Rendirse
+                </button>
+                <button
+                    class="reset-btn acfb-bg-yellow-400 hover:acfb-bg-yellow-300 acfb-text-black acfb-font-black acfb-py-3 acfb-px-6 acfb-border-4 acfb-border-black acfb-shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:acfb-shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:acfb-shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:acfb-translate-x-[2px] active:acfb-translate-y-[2px] acfb-uppercase acfb-text-sm acfb-transition-all">
+                    Reiniciar
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Game Area -->
+    <!-- Main Content -->
     <main class="acfb-flex acfb-flex-col md:acfb-flex-row acfb-gap-8">
 
         <!-- Grid Section -->
@@ -137,19 +215,25 @@ $unique_id = 'sopa-letras-' . uniqid();
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h2 class="acfb-text-4xl acfb-font-black acfb-text-black acfb-mb-4 acfb-uppercase">¡Felicitaciones!</h2>
-            <p class="acfb-text-black acfb-mb-8 acfb-font-bold acfb-text-lg">Has encontrado todas las palabras.</p>
+            <h2 class="acfb-text-4xl acfb-font-black acfb-text-black acfb-mb-4 acfb-uppercase">
+                ¡Felicitaciones!</h2>
+            <p class="acfb-text-black acfb-mb-8 acfb-font-bold acfb-text-lg">Has encontrado todas
+                las palabras.</p>
 
             <div class="acfb-grid acfb-grid-cols-2 acfb-gap-4 acfb-mb-8">
                 <div
                     class="acfb-bg-cyan-300 acfb-border-4 acfb-border-black acfb-p-4 acfb-shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <p class="acfb-text-xs acfb-font-black acfb-uppercase acfb-mb-2">Tiempo</p>
-                    <p class="final-time acfb-text-2xl acfb-font-black acfb-font-mono">00:00</p>
+                    <p class="acfb-text-xs acfb-font-black acfb-uppercase acfb-mb-2">
+                        Tiempo</p>
+                    <p class="final-time acfb-text-2xl acfb-font-black acfb-font-mono">
+                        00:00</p>
                 </div>
                 <div
                     class="acfb-bg-pink-300 acfb-border-4 acfb-border-black acfb-p-4 acfb-shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <p class="acfb-text-xs acfb-font-black acfb-uppercase acfb-mb-2">Puntuación</p>
-                    <p class="final-score acfb-text-2xl acfb-font-black acfb-font-mono">0</p>
+                    <p class="acfb-text-xs acfb-font-black acfb-uppercase acfb-mb-2">
+                        Puntuación</p>
+                    <p class="final-score acfb-text-2xl acfb-font-black acfb-font-mono">
+                        0</p>
                 </div>
             </div>
 
